@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hazel Shop</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;color:#1e293b;background:#f1f5f9;line-height:1.5}
+img{display:block;max-width:100%}
+button{cursor:pointer;border:none;font-family:inherit;font-size:inherit}
+a{text-decoration:none;color:inherit}
+.hidden{display:none!important}
+
+.nav{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.nav-inner{max-width:1200px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#9333ea);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff}
+.brand h1{font-size:18px;font-weight:800}
+.brand h1 span{color:#4f46e5}
+.brand p{font-size:10px;color:#64748b}
+.search{flex:1;min-width:180px;max-width:420px;padding:9px 14px;border-radius:10px;border:1px solid #e2e8f0;font-size:14px;font-family:inherit}
+.search:focus{outline:2px solid #6366f1;outline-offset:0;border-color:transparent}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn-nav{padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e2e8f0;font-weight:600;font-size:13px;position:relative}
+.btn-cart{padding:9px 14px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:700;font-size:13px;position:relative;display:flex;align-items:center;gap:6px}
+.badge{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;padding:0 3px;font-weight:700}
+
+.hero{background:linear-gradient(135deg,#4f46e5,#7c3aed,#9333ea);color:#fff;padding:60px 20px}
+.hero-inner{max-width:1200px;margin:auto}
+.hero-tag{display:inline-block;background:rgba(255,255,255,.2);padding:6px 14px;border-radius:999px;font-size:13px;margin-bottom:14px}
+.hero h2{font-size:clamp(28px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:14px}
+.hero h2 span{color:#fde047}
+.hero p{font-size:16px;color:#c7d2fe;max-width:560px;margin-bottom:22px}
+.hero a{display:inline-block;background:#fff;color:#4338ca;padding:12px 24px;border-radius:12px;font-weight:700;box-shadow:0 10px 20px rgba(0,0,0,.15)}
+
+.section{max-width:1200px;margin:auto;padding:40px 20px 20px}
+.tag{color:#4f46e5;font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+.title{font-size:22px;font-weight:900;margin:4px 0 18px}
+.head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.count{background:#fff;border:1px solid #e2e8f0;padding:6px 14px;border-radius:10px;font-size:13px;font-weight:600}
+
+.cat-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px}
+.cat{flex-shrink:0;width:130px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;cursor:pointer;transition:.2s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.cat:hover{transform:translateY(-4px)}
+.cat-img{height:80px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden}
+.cat-img img{width:100%;height:100%;object-fit:cover}
+.cat-name{padding:8px;font-weight:700;font-size:12px;text-align:center}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.grid{grid-template-columns:repeat(5,1fr)}}
+
+.card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:.25s;display:flex;flex-direction:column;position:relative}
+.card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+.card-img{height:180px;background:#f8fafc;overflow:hidden;cursor:pointer;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:.35s}
+.card:hover .card-img img{transform:scale(1.05)}
+.wish{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.card-body{padding:12px;display:flex;flex-direction:column;flex:1}
+.card-cat{font-size:10px;font-weight:700;color:#4f46e5;text-transform:uppercase}
+.card-name{font-size:13px;font-weight:700;margin:4px 0;min-height:34px;line-height:1.3;cursor:pointer}
+.card-name:hover{color:#4f46e5}
+.card-price{font-size:15px;font-weight:900;color:#4f46e5;margin:6px 0 10px}
+.btn-add{width:100%;padding:8px;border-radius:99px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:700;font-size:12px;margin-top:auto}
+
+.modal-bg{position:fixed;inset:0;z-index:50;background:rgba(15,23,42,.65);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-lg{max-width:700px}
+.modal-head{padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-head h2{font-size:17px;font-weight:900}
+.modal-close{width:34px;height:34px;border-radius:10px;background:#f1f5f9;font-size:18px;font-weight:700}
+.modal-body{padding:18px;overflow-y:auto;flex:1}
+.modal-foot{padding:16px 20px;border-top:1px solid #e2e8f0;background:#f8fafc;flex-shrink:0}
+.total-row{display:flex;justify-content:space-between;margin-bottom:12px}
+.total-row strong{font-size:20px;color:#4f46e5}
+.btn-primary{width:100%;padding:13px;border-radius:11px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:700;font-size:14px}
+
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9}
+.cart-item-img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:#f1f5f9;flex-shrink:0}
+.cart-info{flex:1;min-width:0}
+.cart-info h4{font-size:13px;font-weight:700}
+.cart-info .price{color:#4f46e5;font-weight:700;font-size:13px}
+.qty{display:flex;align-items:center;gap:6px;margin-top:6px}
+.qty button{width:26px;height:26px;border-radius:7px;background:#f1f5f9;font-weight:700}
+.qty b{min-width:18px;text-align:center;font-size:13px}
+.remove{color:#ef4444;font-size:11px;background:none;margin-left:auto;font-weight:600}
+
+.detail-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:600px){.detail-grid{grid-template-columns:1fr 1fr}}
+.detail-preview{width:100%;aspect-ratio:1;border-radius:14px;object-fit:cover}
+
+.auth-head{padding:20px;background:linear-gradient(135deg,#6366f1,#9333ea);color:#fff;position:relative}
+.auth-head h2{font-size:20px;font-weight:900}
+.auth-close{position:absolute;top:14px;right:16px;background:none;color:#fff;font-size:22px}
+.auth-form{padding:20px}
+.auth-form label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.auth-form input{width:100%;padding:11px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:14px;margin-bottom:12px;font-family:inherit}
+.auth-form input:focus{outline:2px solid #6366f1;border-color:transparent}
+.err{color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px}
+.auth-switch{text-align:center;margin-top:14px;font-size:13px}
+.auth-switch button{color:#4f46e5;font-weight:700;background:none}
+
+.toast{position:fixed;bottom:20px;right:20px;z-index:60;background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600}
+.footer{background:#020617;color:#94a3b8;margin-top:40px;padding:36px 20px;text-align:center}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <div class="brand-icon">🛍️</div>
+      <div>
+        <h1>Hazel<span>Shop</span></h1>
+        <p>Belanja Praktis & Cepat</p>
+      </div>
+    </a>
+    <input id="search" class="search" placeholder="Cari produk..." oninput="handleSearch()">
+    <div class="nav-actions">
+      <button class="btn-nav" onclick="toggleWishlist()">❤️ <span id="wish-count">0</span></button>
+      <button id="auth-button" class="btn-nav" onclick="toggleLogin()">Login</button>
+      <button class="btn-cart" onclick="toggleCart()">🛒 <span id="cart-count" class="badge">0</span></button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-tag">✨ Belanja lebih hemat di Hazel Shop</span>
+    <h2>Koleksi Produk <span>Terlengkap</span></h2>
+    <p>Fashion, elektronik, aksesoris, sepatu, tas, jam, gaming, rumah tangga, olahraga, dan alat tulis.</p>
+    <a href="#produk">🛍️ Mulai Belanja</a>
+  </div>
+</section>
+
+<section class="section">
+  <p class="tag">KATEGORI</p>
+  <h2 class="title">Jelajahi Produk</h2>
+  <div id="category-buttons" class="cat-scroll"></div>
+</section>
+
+<section id="produk" class="section">
+  <div class="head">
+    <div>
+      <p class="tag">KATALOG</p>
+      <h2 class="title" style="margin:0">Semua Produk</h2>
+    </div>
+    <span id="product-total" class="count">100 produk</span>
+  </div>
+  <div id="product-grid" class="grid"></div>
+</section>
+
+<div id="cart-modal" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🛒 Keranjang Belanja</h2>
+      <button class="modal-close" onclick="toggleCart()">×</button>
+    </div>
+    <div id="cart-items" class="modal-body"></div>
+    <div class="modal-foot">
+      <div class="total-row"><span>Total</span><strong id="cart-total">Rp0</strong></div>
+      <button class="btn-primary" onclick="checkout()">Checkout Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<div id="wish-modal" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>❤️ Wishlist Saya</h2>
+      <button class="modal-close" onclick="toggleWishlist()">×</button>
+    </div>
+    <div id="wish-items" class="modal-body"></div>
+  </div>
+</div>
+
+<div id="detail-modal" class="modal-bg hidden">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2>Detail Produk</h2>
+      <button class="modal-close" onclick="closeDetail()">×</button>
+    </div>
+    <div id="detail-body" class="modal-body"></div>
+  </div>
+</div>
+
+<div id="login-modal" class="modal-bg hidden">
+  <div class="modal" style="max-width:420px">
+    <div class="auth-head">
+      <h2 id="auth-title">Login</h2>
+      <button class="auth-close" onclick="toggleLogin()">×</button>
+    </div>
+    <div id="login-form" class="auth-form">
+      <label>Username</label>
+      <input id="login-username" placeholder="Username">
+      <label>Password</label>
+      <input id="login-password" type="password" placeholder="Password">
+      <p id="login-error" class="err"></p>
+      <button class="btn-primary" onclick="handleLogin()">Login</button>
+      <p class="auth-switch">Belum punya akun? <button onclick="showRegister()">Daftar</button></p>
+    </div>
+    <div id="register-form" class="auth-form hidden">
+      <label>Username</label>
+      <input id="register-username" placeholder="Buat username">
+      <label>Password</label>
+      <input id="register-password" type="password" placeholder="Buat password">
+      <label>Konfirmasi Password</label>
+      <input id="register-confirm" type="password" placeholder="Ulangi password">
+      <p id="register-error" class="err"></p>
+      <button class="btn-primary" onclick="handleRegister()">Daftar</button>
+      <p class="auth-switch">Sudah punya akun? <button onclick="showLogin()">Login</button></p>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<footer class="footer">
+  <h2>Hazel<span>Shop</span></h2>
+  <p>© 2026 HazelShop. All rights reserved.</p>
+</footer>
+
+<script>
+const categoryImages = {
+  "Fashion": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop",
+  "Elektronik": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop",
+  "Aksesoris": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&auto=format&fit=crop",
+  "Sepatu": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop",
+  "Tas": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop",
+  "Jam & Perhiasan": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop",
+  "Gaming": "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500&auto=format&fit=crop",
+  "Rumah & Dapur": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=500&auto=format&fit=crop",
+  "Olahraga": "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=500&auto=format&fit=crop",
+  "Alat Tulis": "https://images.unsplash.com/photo-1585336261026-8f5786372966?w=500&auto=format&fit=crop"
+};
+
+const products=[
+{id:1,name:"Kaos Oversize",category:"Fashion",price:75000,img:"https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop"},
+{id:2,name:"Hoodie Warm Fleece",category:"Fashion",price:150000,img:"https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format&fit=crop"},
+{id:3,name:"Kemeja Casual",category:"Fashion",price:120000,img:"https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop"},
+{id:4,name:"Celana Cargo",category:"Fashion",price:135000,img:"https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&auto=format&fit=crop"},
+{id:5,name:"Celana Jeans Slim",category:"Fashion",price:180000,img:"https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop"},
+{id:6,name:"Jaket Denim",category:"Fashion",price:200000,img:"https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500&auto=format&fit=crop"},
+{id:7,name:"Sweater Rajut",category:"Fashion",price:125000,img:"https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&auto=format&fit=crop"},
+{id:8,name:"Kaos Polo Shirt",category:"Fashion",price:95000,img:"https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=500&auto=format&fit=crop"},
+{id:9,name:"Celana Pendek Chino",category:"Fashion",price:85000,img:"https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=500&auto=format&fit=crop"},
+{id:10,name:"Jersey Sport",category:"Fashion",price:110000,img:"https://images.unsplash.com/photo-1580089582676-189679198642?w=500&auto=format&fit=crop"},
+{id:11,name:"Headphone Wireless",category:"Elektronik",price:200000,img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop"},
+{id:12,name:"TWS Earbuds",category:"Elektronik",price:175000,img:"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&auto=format&fit=crop"},
+{id:13,name:"Speaker Bluetooth",category:"Elektronik",price:250000,img:"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&auto=format&fit=crop"},
+{id:14,name:"Powerbank 10000mAh",category:"Elektronik",price:150000,img:"https://images.unsplash.com/photo-1609592424109-dd9892f1b177?w=500&auto=format&fit=crop"},
+{id:15,name:"Kepala Charger Fast",category:"Elektronik",price:75000,img:"https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&auto=format&fit=crop"},
+{id:16,name:"Kabel Data Type C",category:"Elektronik",price:45000,img:"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop"},
+{id:17,name:"Mouse Wireless",category:"Elektronik",price:100000,img:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&auto=format&fit=crop"},
+{id:18,name:"Keyboard Mechanical",category:"Elektronik",price:180000,img:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&auto=format&fit=crop"},
+{id:19,name:"Webcam Full HD",category:"Elektronik",price:220000,img:"https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=500&auto=format&fit=crop"},
+{id:20,name:"Smartwatch Fitness",category:"Elektronik",price:350000,img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop"},
+{id:21,name:"Topi Baseball",category:"Aksesoris",price:50000,img:"https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500&auto=format&fit=crop"},
+{id:22,name:"Dompet Kulit",category:"Aksesoris",price:80000,img:"https://images.unsplash.com/photo-1627123424574-724758594e93?w=500&auto=format&fit=crop"},
+{id:23,name:"Kacamata Hitam",category:"Aksesoris",price:70000,img:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&auto=format&fit=crop"},
+{id:24,name:"Ikat Pinggang",category:"Aksesoris",price:60000,img:"https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=500&auto=format&fit=crop"},
+{id:25,name:"Gelang Manik",category:"Aksesoris",price:45000,img:"https://images.unsplash.com/photo-1611591475822-1d5773229b3a?w=500&auto=format&fit=crop"},
+{id:26,name:"Kalung Titanium",category:"Aksesoris",price:65000,img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop"},
+{id:27,name:"Cincin Silver",category:"Aksesoris",price:55000,img:"https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&auto=format&fit=crop"},
+{id:28,name:"Syal Leher",category:"Aksesoris",price:70000,img:"https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=500&auto=format&fit=crop"},
+{id:29,name:"Sarung Tangan Motor",category:"Aksesoris",price:60000,img:"https://images.unsplash.com/photo-1542280756-74b2f55e73ab?w=500&auto=format&fit=crop"},
+{id:30,name:"Gantungan Kunci Kulit",category:"Aksesoris",price:25000,img:"https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop"},
+{id:31,name:"Sneakers Red Nike",category:"Sepatu",price:250000,img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop"},
+{id:32,name:"Sepatu Futsal",category:"Sepatu",price:300000,img:"https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=500&auto=format&fit=crop"},
+{id:33,name:"Sepatu Running Pro",category:"Sepatu",price:350000,img:"https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&auto=format&fit=crop"},
+{id:34,name:"Sneakers Canvas",category:"Sepatu",price:225000,img:"https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500&auto=format&fit=crop"},
+{id:35,name:"Sepatu Formal Kulit",category:"Sepatu",price:200000,img:"https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=500&auto=format&fit=crop"},
+{id:36,name:"Sandal Gunung",category:"Sepatu",price:100000,img:"https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=500&auto=format&fit=crop"},
+{id:37,name:"Sandal Slop Casual",category:"Sepatu",price:75000,img:"https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=500&auto=format&fit=crop"},
+{id:38,name:"Sepatu Boots Leather",category:"Sepatu",price:400000,img:"https://images.unsplash.com/photo-1542840410-3092f99611a3?w=500&auto=format&fit=crop"},
+{id:39,name:"Slip On Casual",category:"Sepatu",price:150000,img:"https://images.unsplash.com/photo-1562183241-b937e95585b6?w=500&auto=format&fit=crop"},
+{id:40,name:"Sepatu Basket",category:"Sepatu",price:450000,img:"https://images.unsplash.com/photo-1579338559194-a162d19bf842?w=500&auto=format&fit=crop"},
+{id:41,name:"Ransel Backpack",category:"Tas",price:150000,img:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop"},
+{id:42,name:"Tas Selempang Mini",category:"Tas",price:90000,img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&auto=format&fit=crop"},
+{id:43,name:"Tas Laptop 15 Inch",category:"Tas",price:200000,img:"https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop"},
+{id:44,name:"Tas Ransel Sekolah",category:"Tas",price:175000,img:"https://images.unsplash.com/photo-1577733966973-d680bffd2e80?w=500&auto=format&fit=crop"},
+{id:45,name:"Tas Duffle Sport",category:"Tas",price:140000,img:"https://images.unsplash.com/photo-1510017803434-a899398421b3?w=500&auto=format&fit=crop"},
+{id:46,name:"Waistbag / Tas Pinggang",category:"Tas",price:70000,img:"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&auto=format&fit=crop"},
+{id:47,name:"Koper / Tas Travel",category:"Tas",price:250000,img:"https://images.unsplash.com/photo-1565026057447-ba90a3d07d6b?w=500&auto=format&fit=crop"},
+{id:48,name:"Tas Tote Bag",category:"Tas",price:80000,img:"https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=500&auto=format&fit=crop"},
+{id:49,name:"Tas Kamera DSLR",category:"Tas",price:180000,img:"https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&auto=format&fit=crop"},
+{id:50,name:"Drawstring Bag / Tas Serut",category:"Tas",price:50000,img:"https://images.unsplash.com/photo-1509762774605-f07235a08f1f?w=500&auto=format&fit=crop"},
+{id:51,name:"Jam Tangan Digital LED",category:"Jam & Perhiasan",price:125000,img:"https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=500&auto=format&fit=crop"},
+{id:52,name:"Jam Tangan Rantai Analog",category:"Jam & Perhiasan",price:175000,img:"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&auto=format&fit=crop"},
+{id:53,name:"Jam Sport Tahan Air",category:"Jam & Perhiasan",price:200000,img:"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&auto=format&fit=crop"},
+{id:54,name:"Jam Kulit Classic",category:"Jam & Perhiasan",price:225000,img:"https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=500&auto=format&fit=crop"},
+{id:55,name:"Gelang Rantai Silver",category:"Jam & Perhiasan",price:75000,img:"https://images.unsplash.com/photo-1611591475822-1d5773229b3a?w=500&auto=format&fit=crop"},
+{id:56,name:"Kalung Liontin",category:"Jam & Perhiasan",price:85000,img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop"},
+{id:57,name:"Cincin Tunangan",category:"Jam & Perhiasan",price:60000,img:"https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&auto=format&fit=crop"},
+{id:58,name:"Anting Mutiara",category:"Jam & Perhiasan",price:55000,img:"https://images.unsplash.com/photo-1630019852942-f89202989a59?w=500&auto=format&fit=crop"},
+{id:59,name:"Gelang Bangle Gold",category:"Jam & Perhiasan",price:90000,img:"https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&auto=format&fit=crop"},
+{id:60,name:"Jam Tangan Black Quartz",category:"Jam & Perhiasan",price:150000,img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop"},
+{id:61,name:"Mouse Gaming RGB",category:"Gaming",price:150000,img:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&auto=format&fit=crop"},
+{id:62,name:"Keyboard Mechanical RGB",category:"Gaming",price:250000,img:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&auto=format&fit=crop"},
+{id:63,name:"Headset Gaming 7.1",category:"Gaming",price:225000,img:"https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&auto=format&fit=crop"},
+{id:64,name:"Mousepad XL Gaming",category:"Gaming",price:75000,img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&auto=format&fit=crop"},
+{id:65,name:"Gamepad Controller PC/PS",category:"Gaming",price:300000,img:"https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=500&auto=format&fit=crop"},
+{id:66,name:"Cooling Pad Laptop Gaming",category:"Gaming",price:180000,img:"https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=500&auto=format&fit=crop"},
+{id:67,name:"Webcam Streaming 60fps",category:"Gaming",price:250000,img:"https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=500&auto=format&fit=crop"},
+{id:68,name:"Kursi Gaming Ergonomis",category:"Gaming",price:1500000,img:"https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=500&auto=format&fit=crop"},
+{id:70,name:"Microphone Condenser Streamer",category:"Gaming",price:300000,img:"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&auto=format&fit=crop"},
+{id:71,name:"Botol Minum Stainless",category:"Rumah & Dapur",price:60000,img:"https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&auto=format&fit=crop"},
+{id:72,name:"Tumbler Kopi Vacuum",category:"Rumah & Dapur",price:85000,img:"https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=500&auto=format&fit=crop"},
+{id:73,name:"Piring Keramik Estetik",category:"Rumah & Dapur",price:30000,img:"https://images.unsplash.com/photo-1614088685112-0a760b71a3c8?w=500&auto=format&fit=crop"},
+{id:74,name:"Gelas Kaca Bening",category:"Rumah & Dapur",price:25000,img:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=500&auto=format&fit=crop"},
+{id:75,name:"Sendok Garpu Set",category:"Rumah & Dapur",price:40000,img:"https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=500&auto=format&fit=crop"},
+{id:77,name:"Wajan Anti Lengket",category:"Rumah & Dapur",price:150000,img:"https://images.unsplash.com/photo-1583778176476-4a8b02a64c01?w=500&auto=format&fit=crop"},
+{id:78,name:"Panci Stainless Steel",category:"Rumah & Dapur",price:175000,img:"https://images.unsplash.com/photo-1585515320310-259814833e62?w=500&auto=format&fit=crop"},
+{id:79,name:"Kotak Makan Bekal",category:"Rumah & Dapur",price:50000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop"},
+{id:80,name:"Rak Dapur Minimalis",category:"Rumah & Dapur",price:200000,img:"https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=500&auto=format&fit=crop"},
+{id:81,name:"Bola Futsal Original",category:"Olahraga",price:150000,img:"https://images.unsplash.com/photo-1518604666860-9ed391f76460?w=500&auto=format&fit=crop"},
+{id:82,name:"Bola Sepak Match",category:"Olahraga",price:175000,img:"https://images.unsplash.com/photo-1614632537190-23e4146777db?w=500&auto=format&fit=crop"},
+{id:83,name:"Bola Basket Spalding",category:"Olahraga",price:200000,img:"https://images.unsplash.com/photo-1519861531473-9200262188bf?w=500&auto=format&fit=crop"},
+{id:84,name:"Raket Badminton",category:"Olahraga",price:225000,img:"https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop"},
+{id:85,name:"Kok Badminton (1 Slop)",category:"Olahraga",price:50000,img:"https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop"},
+{id:86,name:"Jersey Gym / Lari",category:"Olahraga",price:100000,img:"https://images.unsplash.com/photo-1580089582676-189679198642?w=500&auto=format&fit=crop"},
+{id:87,name:"Kaos Kaki Sport Tebal",category:"Olahraga",price:40000,img:"https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=500&auto=format&fit=crop"},
+{id:88,name:"Tali Skipping Jump Rope",category:"Olahraga",price:45000,img:"https://images.unsplash.com/photo-1517649763962-0c623266010b?w=500&auto=format&fit=crop"},
+{id:89,name:"Matras Yoga Anti Slip",category:"Olahraga",price:150000,img:"https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&auto=format&fit=crop"},
+{id:90,name:"Sarung Tangan Fitness",category:"Olahraga",price:75000,img:"https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500&auto=format&fit=crop"},
+{id:91,name:"Buku Tulis A5",category:"Alat Tulis",price:10000,img:"https://images.unsplash.com/photo-1585336261026-8f5786372966?w=500&auto=format&fit=crop"},
+{id:92,name:"Pulpen Gel Black",category:"Alat Tulis",price:5000,img:"https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=500&auto=format&fit=crop"},
+{id:93,name:"Pensil Kayu 2B",category:"Alat Tulis",price:4000,img:"https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop"},
+{id:94,name:"Penghapus Pensil",category:"Alat Tulis",price:3000,img:"https://images.unsplash.com/photo-1585336261026-8f5786372966?w=500&auto=format&fit=crop"},
+{id:95,name:"Penggaris Besi 30cm",category:"Alat Tulis",price:5000,img:"https://images.unsplash.com/photo-1585336261026-8f5786372966?w=500&auto=format&fit=crop"},
+{id:96,name:"Kotak Pensil Resleting",category:"Alat Tulis",price:35000,img:"https://images.unsplash.com/photo-1585336261026-8f5786372966?w=500&auto=format&fit=crop"},
+{id:97,name:"Spidol Whiteboard Set",category:"Alat Tulis",price:15000,img:"https://images.unsplash.com/photo-1626785774573-4b799315345d?w=500&auto=format&fit=crop"},
+{id:98,name:"Stabilo Highlighter",category:"Alat Tulis",price:10000,img:"https://images.unsplash.com/photo-1626785774573-4b799315345d?w=500&auto=format&fit=crop"},
+{id:99,name:"Buku Gambar A3",category:"Alat Tulis",price:15000,img:"https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop"},
+{id:100,name:"Pensil Warna 12 Set",category:"Alat Tulis",price:35000,img:"https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop"}
+];
+
+let cart=JSON.parse(localStorage.getItem("cart")||"[]");
+let wish=JSON.parse(localStorage.getItem("wish")||"[]");
+let filterCat="Semua",searchQ="";
+const rp=n=>"Rp"+n.toLocaleString("id-ID");
+
+function renderCategories(){
+  const cats=["Semua",...new Set(products.map(p=>p.category))];
+  document.getElementById("category-buttons").innerHTML=cats.map(c=>{
+    const imgUrl = c === "Semua" ? "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=500&auto=format&fit=crop" : (categoryImages[c] || "");
+    return `<div class="cat" onclick="filterProducts('${c}')"><div class="cat-img"><img src="${imgUrl}" alt="${c}"></div><div class="cat-name">${c}</div></div>`;
+  }).join("");
+}
+
+function renderProducts(){
+  let list=filterCat==="Semua"?products:products.filter(p=>p.category===filterCat);
+  if(searchQ)list=list.filter(p=>p.name.toLowerCase().includes(searchQ.toLowerCase()));
+  document.getElementById("product-total").textContent=list.length+" produk";
+  document.getElementById("product-grid").innerHTML=list.map(p=>{
+    const isW=wish.includes(p.id);
+    return `<div class="card">
+      <button class="wish" onclick="toggleWish(${p.id})">${isW?"❤️":"🤍"}</button>
+      <div class="card-img" onclick="showDetail(${p.id})">
+        <img src="${p.img}" alt="${p.name}">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-name" onclick="showDetail(${p.id})">${p.name}</div>
+        <div class="card-price">${rp(p.price)}</div>
+        <button class="btn-add" onclick="addToCart(${p.id})">+ Keranjang</button>
+      </div></div>`;
+  }).join("");
+}
+
+function filterProducts(c){filterCat=c;renderProducts();document.getElementById("produk").scrollIntoView({behavior:"smooth"});}
+function handleSearch(){searchQ=document.getElementById("search").value;renderProducts();}
+
+function showDetail(id){
+  const p=products.find(x=>x.id===id);
+  const isW=wish.includes(id);
+  document.getElementById("detail-body").innerHTML=`
+    <div class="detail-grid">
+      <img class="detail-preview" src="${p.img}" alt="${p.name}">
+      <div>
+        <div class="card-cat">${p.category}</div>
+        <h3 style="font-size:20px;font-weight:900;margin:6px 0">${p.name}</h3>
+        <div class="card-price" style="font-size:22px">${rp(p.price)}</div>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6">Produk berkualitas dari Hazel Shop. Dijamin original, dikemas aman, siap kirim ke seluruh Indonesia.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary" style="flex:1" onclick="addToCart(${p.id});closeDetail()">+ Keranjang</button>
+          <button class="btn-nav" style="padding:13px 16px;font-size:16px" onclick="toggleWish(${p.id});showDetail(${p.id})">${isW?"❤️":"🤍"}</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("detail-modal").classList.remove("hidden");
+}
+function closeDetail(){document.getElementById("detail-modal").classList.add("hidden");}
+
+function saveCart(){localStorage.setItem("cart",JSON.stringify(cart));updateCart();}
+function addToCart(id){const it=cart.find(i=>i.id===id);if(it)it.qty++;else cart.push({id:id,qty:1});saveCart();toast("✨ Ditambahkan");}
+function changeQty(id,d){const it=cart.find(i=>i.id===id);if(!it)return;it.qty+=d;if(it.qty<=0)cart=cart.filter(i=>i.id!==id);saveCart();}
+function removeItem(id){cart=cart.filter(i=>i.id!==id);saveCart();toast("Dihapus");}
+function updateCart(){
+  const box=document.getElementById("cart-items");let total=0,count=0;
+  if(cart.length===0){
+    box.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px">Keranjang kosong</p>';
+  }else{
+    box.innerHTML=cart.map(i=>{
+      const p=products.find(x=>x.id===i.id);if(!p)return"";
+      total+=p.price*i.qty;count+=i.qty;
+      return `<div class="cart-item">
+        <img class="cart-item-img" src="${p.img}" alt="${p.name}">
+        <div class="cart-info">
+          <h4>${p.name}</h4>
+          <div class="price">${rp(p.price)}</div>
+          <div class="qty">
+            <button onclick="changeQty(${p.id},-1)">−</button>
+            <b>${i.qty}</b>
+            <button onclick="changeQty(${p.id},1)">+</button>
+            <button class="remove" onclick="removeItem(${p.id})">Hapus</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+  document.getElementById("cart-total").textContent=rp(total);
+  document.getElementById("cart-count").textContent=count;
+}
+function toggleCart(){document.getElementById("cart-modal").classList.toggle("hidden");}
+function checkout(){
+  if(cart.length===0){toast("🛒 Kosong");return;}
+  if(!getCurrentUser()){toggleCart();showLogin();toast("🔐 Login dulu");return;}
+  alert("Checkout berhasil!");cart=[];saveCart();toggleCart();
+}
+
+function saveWish(){localStorage.setItem("wish",JSON.stringify(wish));updateWish();}
+function toggleWish(id){
+  if(wish.includes(id))wish=wish.filter(x=>x!==id);
+  else wish.push(id);
+  saveWish();renderProducts();
+  toast(wish.includes(id)?"❤️ Ditambah ke wishlist":"Dihapus dari wishlist");
+}
+function updateWish(){
+  document.getElementById("wish-count").textContent=wish.length;
+  const box=document.getElementById("wish-items");
+  if(wish.length===0){box.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px">Wishlist kosong</p>';return;}
+  box.innerHTML=wish.map(id=>{
+    const p=products.find(x=>x.id===id);if(!p)return"";
+    return `<div class="cart-item">
+      <img class="cart-item-img" src="${p.img}" alt="${p.name}">
+      <div class="cart-info">
+        <h4>${p.name}</h4>
+        <div class="price">${rp(p.price)}</div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button class="btn-add" style="width:auto;padding:6px 12px" onclick="addToCart(${p.id})">+ Keranjang</button>
+          <button class="remove" onclick="toggleWish(${p.id});updateWish()">Hapus</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+function toggleWishlist(){document.getElementById("wish-modal").classList.toggle("hidden");updateWish();}
+
+function getUsers(){return JSON.parse(localStorage.getItem("users")||"[]");}
+function getCurrentUser(){return JSON.parse(localStorage.getItem("currentUser")||"null");}
+function toggleLogin(){document.getElementById("login-modal").classList.toggle("hidden");}
+function showLogin(){
+  document.getElementById("auth-title").textContent="Login";
+  document.getElementById("login-form").classList.remove("hidden");
+  document.getElementById("register-form").classList.add("hidden");
+}
+function showRegister(){
+  document.getElementById("auth-title").textContent="Daftar";
+  document.getElementById("login-form").classList.add("hidden");
+  document.getElementById("register-form").classList.remove("hidden");
+}
+function handleRegister(){
+  const u=document.getElementById("register-username").value.trim();
+  const p=document.getElementById("register-password").value;
+  const c=document.getElementById("register-confirm").value;
+  const e=document.getElementById("register-error");e.textContent="";
+  if(!u||!p||!c){e.textContent="Semua harus diisi.";return;}
+  if(p!==c){e.textContent="Password tidak sama.";return;}
+  const users=getUsers();
+  if(users.some(x=>x.username.toLowerCase()===u.toLowerCase())){e.textContent="Username sudah dipakai.";return;}
+  users.push({username:u,password:p});
+  localStorage.setItem("users",JSON.stringify(users));
+  toast("🎉 Akun dibuat!");showLogin();
+}
+function handleLogin(){
+  const u=document.getElementById("login-username").value.trim();
+  const p=document.getElementById("login-password").value;
+  const e=document.getElementById("login-error");
+  const users=getUsers();
+  const user=users.find(x=>x.username.toLowerCase()===u.toLowerCase()&&x.password===p);
+  if(!user){e.textContent="Username atau password salah.";return;}
+  localStorage.setItem("currentUser",JSON.stringify({username:user.username}));
+  updateAuthButton();toggleLogin();toast("👋 Halo, "+user.username);
+}
+function logout(){localStorage.removeItem("currentUser");updateAuthButton();toast("👋 Logout");}
+function updateAuthButton(){
+  const b=document.getElementById("auth-button");
+  const u=getCurrentUser();
+  if(u){b.textContent="Logout ("+u.username+")";b.onclick=logout;}
+  else{b.textContent="Login";b.onclick=toggleLogin;}
+}
+
+function toast(m){
+  const t=document.getElementById("toast");
+  t.textContent=m;t.classList.remove("hidden");
+  clearTimeout(window._t);
+  window._t=setTimeout(()=>t.classList.add("hidden"),2000);
+}
+
+renderCategories();renderProducts();updateCart();updateWish();updateAuthButton();
+</script>
+</body>
+</html>
